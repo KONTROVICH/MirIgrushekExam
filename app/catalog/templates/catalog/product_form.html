@@ -9,6 +9,20 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
+    <!-- Блокировка повторного открытия формы -->
+    <script>
+        (function() {
+            if (localStorage.getItem('editingProduct') === 'true') {
+                alert('Форма редактирования уже открыта в другой вкладке!');
+                window.location.href = "{% url 'catalog:product_list' %}";
+                return;
+            }
+            localStorage.setItem('editingProduct', 'true');
+            window.addEventListener('beforeunload', function() {
+                localStorage.removeItem('editingProduct');
+            });
+        })();
+    </script>
     <div class="navbar">
         <div class="navbar-left">
             <img src="{% static 'logo.png' %}" alt="Логотип" class="logo">

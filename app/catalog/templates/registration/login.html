@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход - МирИгрушек</title>
+    <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-left">
+            <img src="{% static 'logo.png' %}" alt="Логотип" class="logo">
+            <span class="site-name">МирИгрушек</span>
+        </div>
+        <div class="navbar-right">
+            <form method="post" action="{% url 'catalog:guest_login' %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-guest">Войти как гость</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="login-form">
+            <h1>Вход в систему</h1>
+            {% if error %}
+                <div class="error-message">
+                    <p>{{ error }}</p>
+                </div>
+            {% endif %}
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="username">Email:</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Пароль:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Войти</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

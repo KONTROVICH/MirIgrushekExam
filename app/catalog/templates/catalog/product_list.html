@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>МирИгрушек - Каталог</title>
+    <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-left">
+            <img src="{% static 'logo.png' %}" alt="Логотип" class="logo">
+            <span class="site-name">МирИгрушек</span>
+        </div>
+        <div class="navbar-right">
+            {% if user.is_authenticated %}
+                <span class="user-info">{{ user.email|default:user.username }}</span>
+                {% if user_role == 'admin' %}
+                    <span class="role-badge admin-badge">Администратор</span>
+                {% elif user_role == 'manager' %}
+                    <span class="role-badge manager-badge">Менеджер</span>
+                {% elif user_role == 'client' %}
+                    <span class="role-badge client-badge">Клиент</span>
+                {% else %}
+                    <span class="role-badge guest-badge">Гость</span>
+                {% endif %}
+                <a href="{% url 'catalog:logout' %}" class="btn btn-logout">Выйти</a>
+            {% else %}
+                <div class="guest-actions">
+                    <a href="{% url 'catalog:login' %}" class="btn btn-login">Войти</a>
+                    <form method="post" action="{% url 'catalog:guest_login' %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-guest">Войти как гость</button>
+                    </form>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Каталог товаров</h1>
+
+        <div class="admin-actions">
+            {% if user_role == 'admin' %}
+                <a href="{% url 'catalog:product_create' %}" class="btn btn-primary">Добавить товар</a>
+                <a href="{% url 'catalog:order_list' %}" class="btn btn-secondary">Управление заказами</a>
+            {% elif user_role == 'manager' %}
+                <a href="{% url 'catalog:order_list' %}" class="btn btn-secondary">Список заказов</a>
+            {% endif %}
+        </div>
+
+        {% if user_role == 'manager' or user_role == 'admin' %}
+        <div class="filter-panel" id="filter-panel">
+            <input type="text" id="search-input" placeholder="Поиск по названию..." class="filter-input">
+            <select id="category-filter" class="filter-select">
+                <option value="">Все категории</option>
+                {% for category in categories %}
+                    <option value="{{ category.id }}">{{ category.name }}</option>
+                {% endfor %}
+            </select>
+            <select id="supplier-filter" class="filter-select">
+                <option value="">Все поставщики</option>
+                {% for supplier in suppliers %}
+                    <option value="{{ supplier.id }}">{{ supplier.name }}</option>
+                {% endfor %}
+            </select>
+            <select id="manufacturer-filter" class="filter-select">
+                <option value="">Все производители</option>
+                {% for manufacturer in manufacturers %}
+                    <option value="{{ manufacturer.id }}">{{ manufacturer.name }}</option>
+                {% endfor %}
+            </select>
+            <select id="sort-select" class="filter-select">
+                <option value="">Без сортировки</option>
+                <option value="price_asc">Цена ↑</option>
+                <option value="price_desc">Цена ↓</option>
+                <option value="name">Название</option>
+                <option value="discount">Скидка</option>
+            </select>
+        </div>
+        {% endif %}
+
+        <div class="product-grid" id="product-grid">
+            {% for product in products %}
+                <div class="product-card{% if product.stock_quantity == 0 %} out-of-stock{% endif %}{% if product.discount > 17 %} high-discount{% endif %}" data-product-id="{{ product.id }}">
+                    <div class="product-image">
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                        {% else %}
+                            <img src="{% static 'picture.png' %}" alt="{{ product.name }}">
+                        {% endif %}
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">{{ product.name }}</h3>
+                        <p class="product-article">Артикул: {{ product.article }}</p>
+                        <p class="product-category">{{ product.category.name }}</p>
+                        {% if product.discount > 0 %}
+                            <p class="product-price old-price">{{ product.price }} ₽</p>
+                            <p class="product-price discounted-price">{{ product.discounted_price }} ₽</p>
+                            <p class="product-discount">Скидка: {{ product.discount }}%</p>
+                        {% else %}
+                            <p class="product-price">{{ product.price }} ₽</p>
+                        {% endif %}
+                        <p class="product-stock">
+                            {% if product.stock_quantity == 0 %}
+                                Нет в наличии
+                            {% else %}
+                                В наличии: {{ product.stock_quantity }} {{ product.unit }}
+                            {% endif %}
+                        </p>
+                        <div class="product-actions">
+                            <a href="{% url 'catalog:product_detail' product.id %}" class="btn btn-details">Подробнее</a>
+                            {% if user_role == 'admin' %}
+                                <a href="{% url 'catalog:product_update' product.id %}" class="btn btn-edit">Редактировать</a>
+                                <a href="{% url 'catalog:product_delete' product.id %}" class="btn btn-delete">Удалить</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="no-products">Товары не найдены.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>

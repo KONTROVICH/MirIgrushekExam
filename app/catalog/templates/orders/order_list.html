@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Заказы - МирИгрушек</title>
+    <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-left">
+            <img src="{% static 'logo.png' %}" alt="Логотип" class="logo">
+            <span class="site-name">МирИгрушек</span>
+        </div>
+        <div class="navbar-right">
+            <span class="user-info">{{ user.email|default:user.username }}</span>
+            <a href="{% url 'catalog:logout' %}" class="btn btn-logout">Выйти</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Управление заказами</h1>
+
+        {% if user_role == 'admin' %}
+            <div class="admin-actions">
+                <a href="{% url 'catalog:order_create' %}" class="btn btn-primary">Создать заказ</a>
+            </div>
+        {% endif %}
+
+        <div class="orders-table-wrapper">
+            <table class="orders-table">
+                <thead>
+                    <tr>
+                        <th>Номер заказа</th>
+                        <th>Дата заказа</th>
+                        <th>Дата выдачи</th>
+                        <th>Статус</th>
+                        <th>Пункт выдачи</th>
+                        <th>Клиент</th>
+                        {% if user_role == 'admin' %}
+                            <th>Действия</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                        <tr>
+                            <td>{{ order.order_number }}</td>
+                            <td>{{ order.order_date }}</td>
+                            <td>{{ order.issue_date }}</td>
+                            <td><span class="status-badge status-{{ order.status }}">{{ order.get_status_display }}</span></td>
+                            <td>{{ order.pickup_point.code }}</td>
+                            <td>{{ order.client_name }}</td>
+                            {% if user_role == 'admin' %}
+                                <td>
+                                    <a href="{% url 'catalog:order_update' order.id %}" class="btn btn-edit btn-sm">Редактировать</a>
+                                    <a href="{% url 'catalog:order_delete' order.id %}" class="btn btn-delete btn-sm">Удалить</a>
+                                </td>
+                            {% endif %}
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="7">Заказы не найдены.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

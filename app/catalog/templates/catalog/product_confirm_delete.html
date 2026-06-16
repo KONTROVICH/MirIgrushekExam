@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Удаление товара - МирИгрушек</title>
+    <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-left">
+            <img src="{% static 'logo.png' %}" alt="Логотип" class="logo">
+            <span class="site-name">МирИгрушек</span>
+        </div>
+        <div class="navbar-right">
+            <span class="user-info">{{ user.email|default:user.username }}</span>
+            <a href="{% url 'catalog:logout' %}" class="btn btn-logout">Выйти</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Удаление товара</h1>
+        {% if error %}
+            <div class="error-message">
+                <p>{{ error }}</p>
+            </div>
+        {% else %}
+            <p>Вы уверены, что хотите удалить товар «{{ product.name }}»?</p>
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-delete">Удалить</button>
+                <a href="{% url 'catalog:product_list' %}" class="btn btn-cancel">Отмена</a>
+            </form>
+        {% endif %}
+    </div>
+</body>
+</html>

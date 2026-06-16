@@ -22,6 +22,7 @@
     </div>
 
     <div class="container">
+        <a href="{% url 'catalog:product_list' %}" class="btn btn-back">← Назад к каталогу</a>
         <h1>Управление заказами</h1>
 
         {% if user_role == 'admin' %}
@@ -30,44 +31,28 @@
             </div>
         {% endif %}
 
-        <div class="orders-table-wrapper">
-            <table class="orders-table">
-                <thead>
-                    <tr>
-                        <th>Номер заказа</th>
-                        <th>Дата заказа</th>
-                        <th>Дата выдачи</th>
-                        <th>Статус</th>
-                        <th>Пункт выдачи</th>
-                        <th>Клиент</th>
+        <div class="order-list">
+            {% for order in orders %}
+                <div class="order-row">
+                    <div class="order-row-left">
+                        <span class="order-row-number">{{ order.order_number }}</span>
+                        <span class="order-row-status"><span class="status-badge status-{{ order.status }}">{{ order.get_status_display }}</span></span>
+                        <span class="order-row-address">{{ order.pickup_point.address }}</span>
+                        <span class="order-row-date">Дата заказа: {{ order.order_date }}</span>
                         {% if user_role == 'admin' %}
-                            <th>Действия</th>
+                        <div class="order-row-actions">
+                            <a href="{% url 'catalog:order_update' order.id %}" class="btn btn-edit btn-sm">Редактировать</a>
+                            <a href="{% url 'catalog:order_delete' order.id %}" class="btn btn-delete btn-sm">Удалить</a>
+                        </div>
                         {% endif %}
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for order in orders %}
-                        <tr>
-                            <td>{{ order.order_number }}</td>
-                            <td>{{ order.order_date }}</td>
-                            <td>{{ order.issue_date }}</td>
-                            <td><span class="status-badge status-{{ order.status }}">{{ order.get_status_display }}</span></td>
-                            <td>{{ order.pickup_point.code }}</td>
-                            <td>{{ order.client_name }}</td>
-                            {% if user_role == 'admin' %}
-                                <td>
-                                    <a href="{% url 'catalog:order_update' order.id %}" class="btn btn-edit btn-sm">Редактировать</a>
-                                    <a href="{% url 'catalog:order_delete' order.id %}" class="btn btn-delete btn-sm">Удалить</a>
-                                </td>
-                            {% endif %}
-                        </tr>
-                    {% empty %}
-                        <tr>
-                            <td colspan="7">Заказы не найдены.</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                    </div>
+                    <div class="order-row-right">
+                        <span class="order-row-issue-date">Дата выдачи: {{ order.issue_date }}</span>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="no-products">Заказы не найдены.</p>
+            {% endfor %}
         </div>
     </div>
 </body>

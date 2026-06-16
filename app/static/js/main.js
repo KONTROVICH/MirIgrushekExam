@@ -46,43 +46,66 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {
             for (var i = 0; i < products.length; i++) {
                 var p = products[i];
-                var cardClass = 'product-card';
-                if (p.stock_quantity === 0) cardClass += ' out-of-stock';
-                if (p.discount > 17) cardClass += ' high-discount';
+                
+                // Определяем классы для строки
+                var rowClass = 'product-row';
+                if (p.stock_quantity === 0) {
+                    rowClass += ' out-of-stock';
+                } else if (p.discount > 17) {
+                    rowClass += ' high-discount';
+                }
 
+                // Блок с ценой
                 var priceHtml = '';
                 if (p.discount > 0) {
-                    priceHtml = '<p class="product-price old-price">' + p.price + ' \u20BD</p>' +
-                                '<p class="product-price discounted-price">' + p.discounted_price + ' \u20BD</p>' +
-                                '<p class="product-discount">Скидка: ' + p.discount + '%</p>';
+                    priceHtml = '<span class="product-row-old-price">' + p.price + ' \u20BD</span>' +
+                                '<span class="product-row-final-price">' + p.discounted_price + ' \u20BD</span>' +
+                                '<span class="product-row-discount">Скидка: ' + p.discount + '%</span>';
                 } else {
-                    priceHtml = '<p class="product-price">' + p.price + ' \u20BD</p>';
+                    priceHtml = '<span class="product-row-final-price">' + p.price + ' \u20BD</span>';
                 }
 
-                var stockHtml = p.stock_quantity === 0
-                    ? 'Нет в наличии'
-                    : 'В наличии: ' + p.stock_quantity + ' ' + p.unit;
+                // Текст о наличии
+                var stockHtml = 'Количество на складе: ' + p.stock_quantity + ' ' + p.unit;
 
-                var actionsHtml = '';
+                // Кнопки действий
+                var actionsHtml = '<a href="/catalog/product/' + p.id + '/" class="btn btn-details">Подробнее</a>';
                 if (userRole === 'admin') {
-                    actionsHtml = '<a href="/catalog/product/' + p.id + '/update/" class="btn btn-edit">Редактировать</a>' +
-                                  '<a href="/catalog/product/' + p.id + '/delete/" class="btn btn-delete">Удалить</a>';
+                    actionsHtml += '<a href="/catalog/product/' + p.id + '/update/" class="btn btn-edit">Редактировать</a>' +
+                                   '<a href="/catalog/product/' + p.id + '/delete/" class="btn btn-delete">Удалить</a>';
                 }
 
-                html += '<div class="' + cardClass + '">' +
-                            '<div class="product-image">' +
-                                '<img src="' + p.image_url + '" alt="' + p.name.replace(/"/g, '&quot;') + '">' +
+                // Описание (обрезаем если больше 100 символов)
+                var descriptionHtml = '';
+                if (p.description && p.description.trim() !== '') {
+                    var desc = p.description;
+                    if (desc.length > 100) {
+                        desc = desc.substring(0, 100) + '...';
+                    }
+                    descriptionHtml = '<p class="product-row-description" title="' + p.description.replace(/"/g, '"') + '">' + desc.replace(/"/g, '"') + '</p>';
+                }
+
+                html += '<div class="' + rowClass + '" data-product-id="' + p.id + '">' +
+                            '<div class="product-row-image">' +
+                                '<img src="' + p.image_url + '" alt="' + p.name.replace(/"/g, '"') + '">' +
                             '</div>' +
-                            '<div class="product-info">' +
-                                '<h3 class="product-name">' + p.name + '</h3>' +
-                                '<p class="product-article">Артикул: ' + p.article + '</p>' +
-                                '<p class="product-category">' + p.category + '</p>' +
-                                priceHtml +
-                                '<p class="product-stock">' + stockHtml + '</p>' +
-                                '<div class="product-actions">' +
-                                    '<a href="/catalog/product/' + p.id + '/" class="btn btn-details">Подробнее</a>' +
-                                    actionsHtml +
+                            '<div class="product-row-content">' +
+                                '<div class="product-row-info">' +
+                                    '<div>' +
+                                        '<span class="product-row-category">' + p.category + '</span>' +
+                                        '<h3 class="product-row-name">' + p.name + '</h3>' +
+                                    '</div>' +
+                                    descriptionHtml +
+                                    '<p class="product-row-manufacturer">Производитель: ' + p.manufacturer + '</p>' +
+                                    '<p class="product-row-supplier">Поставщик: ' + p.supplier + '</p>' +
+                                    '<p class="product-row-stock">' + stockHtml + '</p>' +
                                 '</div>' +
+                                '<div class="product-row-price-block">' +
+                                    priceHtml +
+                                '</div>' +
+                            '</div>' +
+                            '<div class="product-row-actions">' +
+                                actionsHtml +
                             '</div>' +
                         '</div>';
             }

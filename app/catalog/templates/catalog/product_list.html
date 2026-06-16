@@ -85,41 +85,45 @@
         </div>
         {% endif %}
 
-        <div class="product-grid" id="product-grid">
+        <div class="product-list" id="product-grid">
             {% for product in products %}
-                <div class="product-card{% if product.stock_quantity == 0 %} out-of-stock{% endif %}{% if product.discount > 17 %} high-discount{% endif %}" data-product-id="{{ product.id }}">
-                    <div class="product-image">
+                <div class="product-row{% if product.stock_quantity == 0 %} out-of-stock{% endif %}{% if product.discount > 17 and product.stock_quantity != 0 %} high-discount{% endif %}" data-product-id="{{ product.id }}">
+                    <div class="product-row-image">
                         {% if product.image %}
                             <img src="{{ product.image.url }}" alt="{{ product.name }}">
                         {% else %}
                             <img src="{% static 'picture.png' %}" alt="{{ product.name }}">
                         {% endif %}
                     </div>
-                    <div class="product-info">
-                        <h3 class="product-name">{{ product.name }}</h3>
-                        <p class="product-article">Артикул: {{ product.article }}</p>
-                        <p class="product-category">{{ product.category.name }}</p>
-                        {% if product.discount > 0 %}
-                            <p class="product-price old-price">{{ product.price }} ₽</p>
-                            <p class="product-price discounted-price">{{ product.discounted_price }} ₽</p>
-                            <p class="product-discount">Скидка: {{ product.discount }}%</p>
-                        {% else %}
-                            <p class="product-price">{{ product.price }} ₽</p>
-                        {% endif %}
-                        <p class="product-stock">
-                            {% if product.stock_quantity == 0 %}
-                                Нет в наличии
-                            {% else %}
-                                В наличии: {{ product.stock_quantity }} {{ product.unit }}
+                    <div class="product-row-content">
+                        <div class="product-row-info">
+                            <div>
+                                <span class="product-row-category">{{ product.category.name }}</span>
+                                <h3 class="product-row-name">{{ product.name }}</h3>
+                            </div>
+                            {% if product.description %}
+                                <p class="product-row-description" title="{{ product.description }}">{{ product.description|truncatechars:100 }}</p>
                             {% endif %}
-                        </p>
-                        <div class="product-actions">
-                            <a href="{% url 'catalog:product_detail' product.id %}" class="btn btn-details">Подробнее</a>
-                            {% if user_role == 'admin' %}
-                                <a href="{% url 'catalog:product_update' product.id %}" class="btn btn-edit">Редактировать</a>
-                                <a href="{% url 'catalog:product_delete' product.id %}" class="btn btn-delete">Удалить</a>
+                            <p class="product-row-manufacturer">Производитель: {{ product.manufacturer.name }}</p>
+                            <p class="product-row-supplier">Поставщик: {{ product.supplier.name }}</p>
+                            <p class="product-row-stock">Количество на складе: {{ product.stock_quantity }} {{ product.unit }}</p>
+                        </div>
+                        <div class="product-row-price-block">
+                            {% if product.discount > 0 %}
+                                <span class="product-row-old-price">{{ product.price }} ₽</span>
+                                <span class="product-row-final-price">{{ product.discounted_price }} ₽</span>
+                                <span class="product-row-discount">Скидка: {{ product.discount }}%</span>
+                            {% else %}
+                                <span class="product-row-final-price">{{ product.price }} ₽</span>
                             {% endif %}
                         </div>
+                    </div>
+                    <div class="product-row-actions">
+                        <a href="{% url 'catalog:product_detail' product.id %}" class="btn btn-details">Подробнее</a>
+                        {% if user_role == 'admin' %}
+                            <a href="{% url 'catalog:product_update' product.id %}" class="btn btn-edit">Редактировать</a>
+                            <a href="{% url 'catalog:product_delete' product.id %}" class="btn btn-delete">Удалить</a>
+                        {% endif %}
                     </div>
                 </div>
             {% empty %}

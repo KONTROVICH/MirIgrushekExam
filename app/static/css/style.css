@@ -228,18 +228,167 @@ h1 {
     min-width: 150px;
 }
 
+/* Горизонтальный список товаров */
+.product-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.product-row {
+    display: flex;
+    align-items: stretch;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #FFFFFF;
+    transition: box-shadow 0.2s;
+    min-height: 120px;
+}
+
+.product-row:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.product-row.out-of-stock {
+    background-color: #e3f2fd;
+    border-color: #90caf9;
+}
+
+.product-row.high-discount {
+    background-color: #FFDEAD;
+    border-color: #ffcc80;
+}
+
+/* Приоритет голубого фона при отсутствии товара */
+.product-row.out-of-stock.high-discount {
+    background-color: #e3f2fd;
+    border-color: #90caf9;
+}
+
+.product-row-image {
+    flex: 0 0 120px;
+    width: 120px;
+    height: 100px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f5f5f5;
+    flex-shrink: 0;
+}
+
+.product-row-image img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.product-row-content {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    padding: 10px 15px;
+    gap: 15px;
+}
+
+.product-row-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.product-row-category {
+    font-size: 12px;
+    color: #666;
+    display: inline-block;
+}
+
+.product-row-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    margin: 0;
+}
+
+.product-row-description {
+    font-size: 13px;
+    color: #555;
+    line-height: 1.4;
+    max-width: 600px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.product-row-manufacturer,
+.product-row-supplier {
+    font-size: 13px;
+    color: #666;
+}
+
+.product-row-price-block {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-end;
+    flex-shrink: 0;
+}
+
+.product-row-old-price {
+    font-size: 14px;
+    color: red;
+    text-decoration: line-through;
+}
+
+.product-row-final-price {
+    font-size: 18px;
+    font-weight: bold;
+    color: #000;
+}
+
+.product-row-discount {
+    font-size: 13px;
+    color: #f44336;
+    font-weight: bold;
+}
+
+.product-row-stock {
+    font-size: 13px;
+    color: #666;
+    text-align: right;
+}
+
+.product-row-actions {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.no-products {
+    text-align: center;
+    padding: 40px;
+    color: #888;
+}
+
+/* Старые стили для совместимости (удалить при необходимости) */
 .product-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .product-card {
+    display: flex;
+    align-items: stretch;
     border: 1px solid #e0e0e0;
     border-radius: 8px;
     overflow: hidden;
     transition: box-shadow 0.2s;
     background-color: #FFFFFF;
+    min-height: 120px;
 }
 
 .product-card:hover {
@@ -255,14 +404,19 @@ h1 {
     background-color: #FFDEAD;
 }
 
+.product-card.out-of-stock.high-discount {
+    background-color: #e3f2fd;
+}
+
 .product-image {
-    width: 100%;
-    height: 200px;
+    width: 120px;
+    height: 100px;
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
     background-color: #f5f5f5;
+    flex-shrink: 0;
 }
 
 .product-image img {
@@ -272,32 +426,37 @@ h1 {
 }
 
 .product-info {
-    padding: 15px;
+    padding: 10px 15px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
 .product-name {
     font-size: 16px;
-    margin-bottom: 5px;
+    font-weight: bold;
+    margin-bottom: 0;
     color: #333;
 }
 
 .product-article {
     font-size: 12px;
     color: #888;
-    margin-bottom: 5px;
+    margin-bottom: 0;
 }
 
 .product-category {
-    font-size: 13px;
+    font-size: 12px;
     color: #666;
-    margin-bottom: 8px;
+    margin-bottom: 0;
 }
 
 .product-price {
     font-size: 18px;
     font-weight: bold;
     color: #333;
-    margin-bottom: 5px;
+    margin-bottom: 0;
 }
 
 .product-price.old-price {
@@ -315,26 +474,20 @@ h1 {
     font-size: 13px;
     color: #f44336;
     font-weight: bold;
-    margin-bottom: 5px;
+    margin-bottom: 0;
 }
 
 .product-stock {
     font-size: 13px;
     color: #666;
-    margin-bottom: 10px;
+    margin-bottom: 0;
 }
 
 .product-actions {
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
-}
-
-.no-products {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 40px;
-    color: #888;
+    margin-top: auto;
 }
 
 .product-detail {
@@ -491,6 +644,7 @@ h1 {
     margin-bottom: 15px;
 }
 
+/* Стили для списка заказов - горизонтальные строки */
 .orders-table-wrapper {
     overflow-x: auto;
 }
@@ -515,6 +669,78 @@ h1 {
 
 .orders-table tr:hover {
     background-color: #f9f9f9;
+}
+
+/* Новый стиль для заказов - горизонтальные строки с двумя блоками */
+.order-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.order-row {
+    display: flex;
+    align-items: stretch;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #FFFFFF;
+    transition: box-shadow 0.2s;
+}
+
+.order-row:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.order-row-left {
+    flex: 1;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.order-row-right {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-left: 1px solid #e0e0e0;
+    background-color: #fafafa;
+    flex-shrink: 0;
+}
+
+.order-row-number {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}
+
+.order-row-status {
+    font-size: 13px;
+    color: #666;
+}
+
+.order-row-address {
+    font-size: 13px;
+    color: #555;
+}
+
+.order-row-date {
+    font-size: 13px;
+    color: #666;
+}
+
+.order-row-issue-date {
+    font-size: 14px;
+    color: #333;
+    font-weight: bold;
+}
+
+.order-row-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: auto;
 }
 
 .status-badge {

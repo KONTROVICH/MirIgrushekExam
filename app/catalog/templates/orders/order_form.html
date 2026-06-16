@@ -22,6 +22,7 @@
     </div>
 
     <div class="container">
+        <a href="{% url 'catalog:order_list' %}" class="btn btn-back">← Назад к списку заказов</a>
         <h1>{{ form_title }}</h1>
         <form method="post" class="product-form">
             {% csrf_token %}

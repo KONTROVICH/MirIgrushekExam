@@ -16,21 +16,23 @@
         </div>
         <div class="navbar-right">
             {% if user.is_authenticated %}
-                <span class="user-info">{{ user.email|default:user.username }}</span>
+                {# Отображаем ФИО пользователя (фамилия, имя, отчество) #}
+                <span class="user-info">{{ user.get_full_name|default:user.username }}</span>
                 <a href="{% url 'catalog:logout' %}" class="btn btn-logout">Выйти</a>
             {% else %}
+                {# Для неаутентифицированных пользователей выводим "Гость" #}
+                <span class="user-info">Гость</span>
                 <div class="guest-actions">
                     <a href="{% url 'catalog:login' %}" class="btn btn-login">Войти</a>
-                    <form method="post" action="{% url 'catalog:guest_login' %}" style="display:inline;">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-guest">Войти как гость</button>
-                    </form>
+                    <a href="{% url 'catalog:product_list' %}" class="btn btn-guest">Войти как гость</a>
                 </div>
             {% endif %}
         </div>
     </div>
 
     <div class="container">
+        <!-- Кнопка "Назад" для возврата к каталогу товаров -->
+        <a href="{% url 'catalog:product_list' %}" class="btn btn-back">← Назад к каталогу</a>
         <div class="product-detail">
             <div class="product-detail-image">
                 {% if product.image %}

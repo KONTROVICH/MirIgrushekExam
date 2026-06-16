@@ -43,11 +43,24 @@ class Command(BaseCommand):
             self.stdout.write(self.style.ERROR(f'Папка import не найдена: {import_dir}'))
             return
 
+        # Импорт пользователей из файла user_import.xlsx
         self._import_users(import_dir)
+        # Импорт товаров из файла Tovar.xlsx
         self._import_tovar(import_dir)
+        # Импорт пунктов выдачи заказов (ПВЗ)
         self._import_pickup_points(import_dir)
+        # Импорт заказов из файла Заказ_import.xlsx
         self._import_orders(import_dir)
+        # Копирование изображений товаров из папки import
         self._copy_images(import_dir)
+
+        # Применяем ресайз до 300x200 для всех импортированных изображений
+        for product in Product.objects.exclude(image=''):
+            try:
+                product._resize_image()
+            except Exception:
+                pass
+
         self.stdout.write(self.style.SUCCESS('Импорт завершён успешно.'))
 
     def _open_sheet(self, import_dir, xlsx_name):

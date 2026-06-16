@@ -302,7 +302,7 @@ h1 {
 
 .product-price.old-price {
     font-size: 14px;
-    color: #999;
+    color: red;
     text-decoration: line-through;
     font-weight: normal;
 }
@@ -388,7 +388,7 @@ h1 {
 
 .detail-price.old-price {
     font-size: 18px;
-    color: #999;
+    color: red;
     text-decoration: line-through;
     font-weight: normal;
 }

@@ -16,7 +16,8 @@
         </div>
         <div class="navbar-right">
             {% if user.is_authenticated %}
-                <span class="user-info">{{ user.email|default:user.username }}</span>
+                {# Отображаем ФИО пользователя (фамилия, имя, отчество) #}
+                <span class="user-info">{{ user.get_full_name|default:user.username }}</span>
                 {% if user_role == 'admin' %}
                     <span class="role-badge admin-badge">Администратор</span>
                 {% elif user_role == 'manager' %}
@@ -28,12 +29,11 @@
                 {% endif %}
                 <a href="{% url 'catalog:logout' %}" class="btn btn-logout">Выйти</a>
             {% else %}
+                {# Для неаутентифицированных пользователей выводим "Гость" #}
+                <span class="user-info">Гость</span>
                 <div class="guest-actions">
                     <a href="{% url 'catalog:login' %}" class="btn btn-login">Войти</a>
-                    <form method="post" action="{% url 'catalog:guest_login' %}" style="display:inline;">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-guest">Войти как гость</button>
-                    </form>
+                    <a href="{% url 'catalog:product_list' %}" class="btn btn-guest">Войти как гость</a>
                 </div>
             {% endif %}
         </div>
@@ -53,7 +53,7 @@
 
         {% if user_role == 'manager' or user_role == 'admin' %}
         <div class="filter-panel" id="filter-panel">
-            <input type="text" id="search-input" placeholder="Поиск по названию..." class="filter-input">
+            <input type="text" id="search-input" placeholder="Поиск по названию, категории, поставщику, производителю..." class="filter-input">
             <select id="category-filter" class="filter-select">
                 <option value="">Все категории</option>
                 {% for category in categories %}
@@ -78,6 +78,9 @@
                 <option value="price_desc">Цена ↓</option>
                 <option value="name">Название</option>
                 <option value="discount">Скидка</option>
+                <!-- Сортировка по количеству на складе -->
+                <option value="stock_asc">Количество ↑</option>
+                <option value="stock_desc">Количество ↓</option>
             </select>
         </div>
         {% endif %}

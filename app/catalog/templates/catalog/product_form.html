@@ -15,7 +15,8 @@
             <span class="site-name">МирИгрушек</span>
         </div>
         <div class="navbar-right">
-            <span class="user-info">{{ user.email|default:user.username }}</span>
+            {# Отображаем ФИО пользователя (фамилия, имя, отчество) #}
+            <span class="user-info">{{ user.get_full_name|default:user.username }}</span>
             <a href="{% url 'catalog:logout' %}" class="btn btn-logout">Выйти</a>
         </div>
     </div>

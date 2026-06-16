@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
 from django.http import JsonResponse, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.db.models import Q
 from .models import Product, Category, Supplier, Manufacturer, Order, OrderItem
 import json
 
@@ -14,20 +15,9 @@ def is_manager_or_admin(user):
     return user.is_authenticated and user.role in ['manager', 'admin']
 
 def guest_login(request):
-    if request.method == 'POST':
-        if request.user.is_authenticated:
-            return redirect('catalog:product_list')
-        from .models import User
-        guest_user, created = User.objects.get_or_create(
-            username='guest',
-            defaults={'role': 'guest'},
-        )
-        if created:
-            guest_user.set_password('guestpassword123')
-            guest_user.save()
-        login(request, guest_user, backend='django.contrib.auth.backends.ModelBackend')
-        return redirect('catalog:product_list')
-    return redirect('catalog:login')
+    # Перенаправляем неавторизованного пользователя сразу на каталог товаров
+    # без создания фиктивного пользователя и аутентификации
+    return redirect('catalog:product_list')
 
 def user_login(request):
     if request.user.is_authenticated:
@@ -46,8 +36,8 @@ def logout_view(request):
     logout(request)
     return redirect('catalog:login')
 
-@login_required
 def product_list(request):
+    # Убран декоратор @login_required для обеспечения гостевого доступа к каталогу
     products = Product.objects.select_related(
         'category', 'supplier', 'manufacturer'
     ).all()
@@ -67,8 +57,8 @@ def product_list(request):
     }
     return render(request, 'catalog/product_list.html', context)
 
-@login_required
 def product_list_ajax(request):
+    # Убран декоратор @login_required для обеспечения гостевого доступа к поиску
     products = Product.objects.select_related(
         'category', 'supplier', 'manufacturer'
     ).all()
@@ -79,8 +69,15 @@ def product_list_ajax(request):
     manufacturer_id = request.GET.get('manufacturer', '').strip()
     sort_by = request.GET.get('sort', '').strip()
 
+    # Поиск по всем текстовым полям с использованием Q-объектов
     if search:
-        products = products.filter(name__icontains=search)
+        products = products.filter(
+            Q(name__icontains=search) |
+            Q(category__name__icontains=search) |
+            Q(supplier__name__icontains=search) |
+            Q(manufacturer__name__icontains=search) |
+            Q(description__icontains=search)
+        )
 
     if category_id:
         products = products.filter(category_id=category_id)
@@ -91,6 +88,7 @@ def product_list_ajax(request):
     if manufacturer_id:
         products = products.filter(manufacturer_id=manufacturer_id)
 
+    # Сортировка товаров по различным параметрам
     if sort_by == 'price_asc':
         products = products.order_by('price')
     elif sort_by == 'price_desc':
@@ -99,6 +97,11 @@ def product_list_ajax(request):
         products = products.order_by('name')
     elif sort_by == 'discount':
         products = products.order_by('-discount')
+    # Сортировка по количеству на складе
+    elif sort_by == 'stock_asc':
+        products = products.order_by('stock_quantity')
+    elif sort_by == 'stock_desc':
+        products = products.order_by('-stock_quantity')
 
     data = []
     for product in products:

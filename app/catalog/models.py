@@ -31,6 +31,11 @@ class User(AbstractUser):
     )
 
     def get_full_name(self):
+        """
+        Возвращает полное ФИО пользователя (фамилия, имя, отчество).
+        Метод переопределяет стандартный get_full_name() из AbstractUser,
+        добавляя отчество (patronymic) к фамилии и имени.
+        """
         full_name = super().get_full_name()
         if self.patronymic:
             full_name += f' {self.patronymic}'
@@ -149,6 +154,10 @@ class Product(models.Model):
         return round(float(self.price) * (1 - float(self.discount) / 100), 2)
 
     def save(self, *args, **kwargs):
+        """
+        При сохранении удаляем старое изображение, если загружено новое,
+        и применяем ресайз до 300x200.
+        """
         if self.pk:
             try:
                 old_product = Product.objects.get(pk=self.pk)
@@ -163,6 +172,9 @@ class Product(models.Model):
             self._resize_image()
 
     def _resize_image(self):
+        """
+        Изменяет размер изображения до 300x200 пикселей с сохранением пропорций и обрезкой.
+        """
         try:
             from PIL import Image
             image_path = os.path.join(settings.MEDIA_ROOT, str(self.image))

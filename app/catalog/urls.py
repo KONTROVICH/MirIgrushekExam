@@ -1,11 +1,13 @@
 from django.urls import path
+from django.views.generic.base import RedirectView
 from . import views
 
 app_name = 'catalog'
 
 urlpatterns = [
     path('', views.user_login, name='login'),
-    path('guest-login/', views.guest_login, name='guest_login'),
+    # Перенаправление для гостевого входа напрямую на каталог
+    path('guest-login/', RedirectView.as_view(url='/catalog/', permanent=False), name='guest_login'),
     path('logout/', views.logout_view, name='logout'),
     path('catalog/', views.product_list, name='product_list'),
     path('catalog/ajax/', views.product_list_ajax, name='product_list_ajax'),

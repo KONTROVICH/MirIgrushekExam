@@ -15,10 +15,8 @@
             <span class="site-name">МирИгрушек</span>
         </div>
         <div class="navbar-right">
-            <form method="post" action="{% url 'catalog:guest_login' %}" style="display:inline;">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-guest">Войти как гость</button>
-            </form>
+            {# Прямая ссылка на каталог для гостей, без POST-формы #}
+            <a href="{% url 'catalog:product_list' %}" class="btn btn-guest">Войти как гость</a>
         </div>
     </div>
 
